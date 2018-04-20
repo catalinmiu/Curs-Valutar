@@ -1,27 +1,36 @@
 import json
 from urllib.request import urlopen
+from pathlib import Path
+import datetime
 
 class Json:
-    def __init__(self, json1):
-        self.json1 = json1
-
-    def write_currency_values_to_file(self):
-        with open("currency.txt", "w") as file:
-            for i in range(0,10):
-                file.write(self.json1['base'][i])
-            file.close()
-
-
-
-class Curs:
     def __init__(self):
-        pass
+        self.json = None
 
-    def get_data(self):
-        data = json.load(urlopen(
-            'https://openexchangerates.org/api/latest.json?app_id=eb234aa07f334a5aa05955f7a35f45d0'))
-        print(data)
-        #json1.write_currency_values_to_file()
+    @staticmethod
+    def is_json_locally(day_of_month=datetime.datetime.today().day):
+        myfile = 'currency' + str(day_of_month) + '.json'
+        my_file = Path(myfile)
+        if my_file.is_file():
+            return 1
+        else:
+            return 0
 
-curs = Curs()
-curs.get_data()
+    def get_json(self):
+        if self.is_json_locally()==0:
+            self.json = json.load(urlopen(
+                'https://openexchangerates.org/api/latest.json?app_id=eb234aa07f334a5aa05955f7a35f45d0'))
+            print("nu este")
+        else:
+            print("ie")
+
+    def copy_json_locally(self):
+        file_name = 'currency' + str(datetime.datetime.today().day) + '.json'
+        with open(file_name, 'w') as file:
+            json.dump(self.json, file, ensure_ascii=False)
+
+
+json1 = Json()
+json1.get_json()
+if not json1.is_json_locally():
+    json1.copy_json_locally()
