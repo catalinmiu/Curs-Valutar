@@ -36,9 +36,29 @@ class Json:
 
 class CurrencyPrompt:
     def __init__(self):
-        pass
+        self.is_active = True
+
+    def show_currency(self, currency_name, day_of_month=datetime.datetime.today().day):
+        file_name = file_name = 'currency' + str(day_of_month) + '.json'
+        if file_name:
+            with open(file_name, 'r') as f:
+                datastore = json.load(f)
+
+        print(datastore["rates"][currency_name])
 
 json1 = Json()
 json1.get_json()
 if not json1.is_json_locally():
     json1.copy_json_locally()
+
+prompt = CurrencyPrompt()
+
+while prompt.is_active:
+    command = input(">>")
+    try:
+        prompt.show_currency(command)
+    except KeyError:
+        if command=="quit":
+            prompt.is_active = False
+            break
+        print("This is not a valid Command")
