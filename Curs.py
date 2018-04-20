@@ -20,8 +20,8 @@ class Json:
         file_name = Path(file_name)
         if file_name.is_file():
             return True
-        else:
-            return False
+
+        return False
 
     def get_json(self):
         if not self.is_json_locally():
@@ -37,7 +37,6 @@ class Json:
 class CurrencyPrompt:
     def __init__(self):
         pass
-
 
 json1 = Json()
 json1.get_json()
