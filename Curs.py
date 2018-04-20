@@ -9,6 +9,13 @@ class Json:
 
     @staticmethod
     def is_json_locally(day_of_month=datetime.datetime.today().day):
+        """"Verify if Json is locally
+
+            Args:
+                day_of_month (Optional[Int]): If specified, the function will search
+                a file with this pattern name 'currency[day_of_month].json'.
+                Otherwise, the day will be the current day
+        """
         myfile = 'currency' + str(day_of_month) + '.json'
         my_file = Path(myfile)
         if my_file.is_file():
