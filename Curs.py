@@ -2,6 +2,7 @@ import json
 from urllib.request import urlopen
 from pathlib import Path
 import datetime
+import os
 
 
 class Json:
@@ -42,18 +43,31 @@ class CurrencyPrompt:
     def __init__(self):
         self.is_active = True
 
-    def display(self, currency_name, day_of_month=datetime.datetime.today().day):
+    @staticmethod
+    def display(currency_name, day_of_month=datetime.datetime.today().day):
         file_name = file_name = 'JsonFiles/currency' + str(day_of_month) + '.json'
         if file_name:
             with open(file_name, 'r') as f:
                 datastore = json.load(f)
-        print(datastore["rates"][currency_name])
+            print(datastore["rates"][currency_name])
+
+    @staticmethod
+    def refresh():
+        Json.save(1)
 
     def quit(self):
         self.is_active = False
 
-    def refresh(self):
-        Json.save(1)
+    @staticmethod
+    def get_history(currency_name):
+        path = 'JsonFiles/'
+        for file_name in os.listdir(path):
+            file_name = 'JsonFiles/' + file_name
+            with open(file_name, 'r') as f:
+                datastore = json.load(f)
+            file_date = datetime.datetime.fromtimestamp(datastore["timestamp"])
+            print(str(file_date.strftime('%Y-%m-%d')) + " - " + str(datastore["rates"][currency_name]))
+
 
 class CursValutar():
     @staticmethod
