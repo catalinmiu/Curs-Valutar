@@ -5,12 +5,10 @@ import datetime
 import os
 
 
-class Json:
-    def __init__(self):
-        self.json = None
+class CurrencyJsonManager:
 
     @staticmethod
-    def exists(day_of_month=datetime.datetime.today().day):
+    def jsonExists(day_of_month=datetime.datetime.today().day):
         """Verify if Json is locally
 
             Args:
@@ -25,19 +23,17 @@ class Json:
 
         return False
 
-    def __load(self):
-        self.json = json.load(urlopen(
+    @staticmethod
+    def __getJsonFromAPI():
+        return json.load(urlopen(
             'https://openexchangerates.org/api/latest.json?app_id=eb234aa07f334a5aa05955f7a35f45d0'))
 
-    @classmethod
-    def save(self, refresh=0):
-        if self.exists() == 0 or refresh == 1:
-            self.__load(self)
-            file_name = 'JsonFiles/currency' + str(datetime.datetime.today().day) + '.json'
-            with open(file_name, 'w') as file:
-                json.dump(self.json, file, ensure_ascii=False)
-            print("save")
-
+    @staticmethod
+    def storeJson():
+        jsonContent = CurrencyJsonManager.__getJsonFromAPI()
+        file_name = 'JsonFiles/currency' + str(datetime.datetime.today().day) + '.json'
+        with open(file_name, 'w') as file:
+            json.dump(jsonContent, file, ensure_ascii=False)
 
 class CurrencyPrompt:
     def __init__(self):
@@ -45,20 +41,20 @@ class CurrencyPrompt:
 
     @staticmethod
     def display(currency_name, day_of_month=datetime.datetime.today().day):
-        file_name = file_name = 'JsonFiles/currency' + str(day_of_month) + '.json'
-        if file_name:
-            with open(file_name, 'r') as f:
-                datastore = json.load(f)
-            print(datastore["rates"][currency_name])
+        file_name = 'JsonFiles/currency' + str(day_of_month) + '.json'
+        with open(file_name, 'r') as f:
+            curJson = json.load(f)
+        print(curJson["rates"][currency_name])
 
     @staticmethod
     def refresh():
-        Json.save(1)
+        CurrencyJsonManager.storeJson()
 
     def quit(self):
         self.is_active = False
 
     @staticmethod
+    #get_history('USD')
     def get_history(currency_name):
         path = 'JsonFiles/'
         for file_name in os.listdir(path):
@@ -66,18 +62,18 @@ class CurrencyPrompt:
             with open(file_name, 'r') as f:
                 datastore = json.load(f)
             file_date = datetime.datetime.fromtimestamp(datastore["timestamp"])
-            print(str(file_date.strftime('%Y-%m-%d')) + " - " + str(datastore["rates"][currency_name]))
+            print(str(file_date.strftime('%Y-%m-%d %H:%M:%S')) + " " + str(datastore["rates"][currency_name]))
 
 
 class CursValutar():
     @staticmethod
     def main():
-        json1 = Json()
-        json1.save()
+        if not CurrencyJsonManager.jsonExists():
+            CurrencyJsonManager.storeJson()
 
         prompt = CurrencyPrompt()
         while prompt.is_active:
-            command = input(">>")
+            command = input(">>sadffdsfsd")
             command = 'prompt.' + command
             try:
                 eval(command)
